@@ -2,10 +2,38 @@ const Book = require("../models/book");
 const Author = require("../models/author");
 const Genre = require("../models/genre");
 const BookInstance = require("../models/bookinstance");
+
+const library_db = require("../library_db");
+
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  res.render("index");
+  await library_db.connect();
+  const [
+    numBooks,
+    numAuthors,
+    numBookInstances,
+    numAvailableBookInstances,
+    numGenres,
+  ] = await Promise.all([
+    Book.countDocuments({}).exec(),
+    Author.countDocuments({}).exec(),
+    BookInstance.countDocuments({}).exec(),
+    BookInstance.countDocuments({ status: "Available" }).exec(),
+    Genre.countDocuments({}).exec(),
+  ]);
+  await library_db.close();
+  const props = {
+    title: "Local Library Home",
+    book_count: numBooks,
+    author_count: numAuthors,
+    book_instance_count: numBookInstances,
+    book_instance_available_count: numAvailableBookInstances,
+    genre_count: numGenres,
+  };
+
+  // Render index page with above dynamic information
+  res.render("index", props);
 });
 
 // Display list of all books.
