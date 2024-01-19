@@ -38,7 +38,14 @@ exports.index = asyncHandler(async (req, res, next) => {
 
 // Display list of all books.
 exports.book_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book list");
+  // Connect with mongodb database
+  await library_db.connect();
+  const allBooks = await Book.find({}, "title author")
+    .sort({ title: 1 })
+    .populate("author")
+    .exec();
+  res.render("book_list", { title: "Book List", book_list: allBooks });
+  await library_db.close();
 });
 
 // Display detail page for a specific book.
