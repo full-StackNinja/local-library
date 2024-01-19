@@ -4,7 +4,39 @@
   list-style: none;
 }
 
-.sidebar-nav a{
-  text-decoration: none;
+.content{
+  margin: 20px;
+  text-align: left;
 }
 
+h1{
+  margin-bottom: 20px;
+  margin-left: 0;
+}
+
+ul{
+  margin: 0;
+}
+
+li{
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+}
+
+.available {
+  color: rgb(96, 192, 96);
+}
+
+.maintenance{
+  color:pink
+}
+
+.loaned{
+  color: rgb(143, 143, 80);
+}
