@@ -4,10 +4,10 @@ const library_db = require("../library_db");
 // Display list of all BookInstances.
 exports.bookinstance_list = asyncHandler(async (req, res, next) => {
   await library_db.connect();
-  const allBookInstances = await BookInstance.find()
-    .populate("book")
-    .exec();
-  
+  const allBookInstances = await BookInstance.find().populate("book").exec();
+
+  await library_db.close();
+
   res.render("bookinstance_list", {
     title: "Book Instance List",
     bookinstance_list: allBookInstances,
