@@ -13,4 +13,4 @@ block content
         else
           span.loaned #{bookinstance.status}
         if bookinstance.status !== 'Available'
-          span (Due: #{bookinstance.due_back})
+          span (Due: #{bookinstance.due_back_formatted})
