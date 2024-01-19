@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+
+  if author_list.length
+    ul 
+      each author in author_list
+        li
+          a(href=author.url) #{author.family_name}, #{author.first_name}
+          span (#{author.date_of_birth} - #{author.date_of_death})
+
+  else
+    p No author names to display here
