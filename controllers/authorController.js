@@ -1,4 +1,5 @@
 const Author = require("../models/author");
+const Book = require("../models/book");
 const asyncHandler = require("express-async-handler");
 const library_db = require("../library_db");
 exports.author_list = asyncHandler(async (req, res, next) => {
@@ -7,10 +8,18 @@ exports.author_list = asyncHandler(async (req, res, next) => {
   const allAuthors = await Author.find({}).exec();
 
   res.render("author_list", { title: "Author List", author_list: allAuthors });
+
+  await library_db.close();
 });
 
 exports.author_detail = asyncHandler(async (req, res, next) => {
-  res.send(`Not IMplemented: author detail ${req.params.id}`);
+  await library_db.connect();
+  const [author, author_books] = await Promise.all([
+    Author.findById(req.params.id),
+    Book.find({ author: req.params.id }),
+  ]);
+  res.render('author_detail', {author, author_books})
+  await library_db.close();
 });
 
 exports.author_create_get = asyncHandler(async (req, res, next) => {
