@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1 Author:&nbsp;#{author.family_name}, #{author.first_name}
+  p #{author.date_of_birth_formatted} - #{author.date_of_death_formatted}
+
+  .books-detail 
+    p.book-heading #[strong Books]
+    if author_books.length
+      dl
+        each book in author_books
+          dt
+            a(href=book.url) #{book.title}
+          dd #{book.summary}
+    
+    else
+      p #[em No books for this author in this library]
+
+
