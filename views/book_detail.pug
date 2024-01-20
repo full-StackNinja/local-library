@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h1 Title: #{book.title}
+  p #[strong Author: ]
+    a(href=book.author.url) #{book.author.family_name}, #{book.author.first_name}
+  p #[strong Summary: ] #{book.summary}
+  p #[strong ISBN: ] #{book.isbn}
+  if book.genre.length
+    p #[strong Genre: ]
+      each genre in book.genre
+        a(href=genre.url) &nbsp;#{genre.name},
+  div.copies-container #[strong COPIES]
+    if bookInstances.length
+      each bookInstance in bookInstances
+        div.copy
+          if bookInstance.status === 'Available'
+            p.available #{bookInstance.status}
+          else if bookInstance.status === 'Maintenance'
+            p.maintenance #{bookInstance.status}
+          else 
+            p.loaned #{bookInstance.status}
+          p #[strong Imprint: ] #{bookInstance.imprint}
+          if bookInstance.status!== 'Available' 
+            p #[strong Due back: ] #{bookInstance.due_back_formatted}
+          p #[strong Id: ] 
+            a(href=bookInstance.url) #{bookInstance._id}
+
+    else
+       p #[em No copies for this book]
+      
