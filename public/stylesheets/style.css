@@ -1,24 +1,29 @@
+:root {
+  font-size: 16px;
+  font-family: "Times New Roman", Times, serif;
+}
+
 .sidebar-nav {
   margin-top: 20px;
   padding: 0;
   list-style: none;
 }
 
-.content{
+.content {
   margin: 20px;
   text-align: left;
 }
 
-h1{
+h1 {
   margin-bottom: 20px;
   margin-left: 0;
 }
 
-ul{
+ul {
   margin: 0;
 }
 
-li{
+li {
   margin: 0;
   padding: 0;
 }
@@ -29,14 +34,32 @@ a {
   padding: 0;
 }
 
+.copies-container {
+  margin-left: 50px;
+  margin-top: 50px;
+}
+
+.copy {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
 .available {
   color: rgb(96, 192, 96);
 }
 
-.maintenance{
-  color:pink
+.maintenance {
+  color: pink;
 }
 
-.loaned{
+.loaned {
   color: rgb(143, 143, 80);
+}
+
+.books-detail {
+  margin-left: 20px;
+}
+
+.book-heading {
+  margin: 50px 0;
 }
