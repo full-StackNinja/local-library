@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1=title
+  h4 Books
+  div(style='margin-left:20px;margin-top:20px')
+    if book_list.length
+      dl
+        each book in book_list
+          dt 
+            a(href=book.url) #{book.title}
+          dd #{book.summary}
+    else
+      em No books under this genre
