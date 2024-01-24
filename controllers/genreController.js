@@ -1,7 +1,9 @@
 const Genre = require("../models/genre");
 const Book = require("../models/book");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 const library_db = require("../library_db");
+
 // Display list of all Genre.
 exports.genre_list = asyncHandler(async (req, res, next) => {
   await library_db.connect();
@@ -34,14 +36,58 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
 });
 
 // Display Genre create form on GET.
-exports.genre_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre create GET");
-});
+exports.genre_create_get = (req, res, next) => {
+  res.render("genre_form", { title: "Create Genre" });
+};
 
 // Handle Genre create on POST.
-exports.genre_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre create POST");
-});
+exports.genre_create_post = [
+  body("name")
+    .trim()
+    .isLength({ min: 3 })
+    .withMessage("Genre name must be at least 3 characters long")
+    .escape(),
+  // Process request after validation and sanitization
+  asyncHandler(async (req, res, next) => {
+    // Extract errors from req object
+    const errors = validationResult(req);
+
+    // Create genre object for the current request
+    const genre = new Genre({ name: req.body.name });
+
+    if (!errors.isEmpty()) {
+      res.render("genre_form", {
+        title: "Create Genre",
+        genre: genre,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data is valid.
+      // First connect with database
+      await library_db.connect();
+
+      // Check whether genre with same name is already created
+      const genreExists = await Genre.findOne({ name: req.body.name })
+        .collation({
+          locale: "en",
+          strength: 2,
+        })
+        .exec();
+      // console.log('genre status', genreExists)
+      if (genreExists) {
+        // Then redirect to its detail page
+        res.redirect(genreExists.url);
+      } else {
+        await genre.save();
+        // and then redirect to its detail page
+        res.redirect(genre.url);
+      }
+    }
+    // At the end close the database connection
+    await library_db.close();
+  }),
+];
 
 // Display Genre delete form on GET.
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
