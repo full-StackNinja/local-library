@@ -65,7 +65,8 @@ a {
 }
 
 .form-group > *{
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+
 }
 
 li.error{
@@ -74,3 +75,4 @@ li.error{
   padding: 0 5px;
   width: fit-content;
 }
+
