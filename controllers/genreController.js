@@ -3,20 +3,15 @@ const Book = require("../models/book");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 
-
 // Display list of all Genre.
 exports.genre_list = asyncHandler(async (req, res, next) => {
-
-  const allGenres = await Genre.find({}).exec();
+  const allGenres = await Genre.find({}).sort({ name: 1 }).exec();
 
   res.render("genre_list", { title: "Genre List", genre_list: allGenres });
-
 });
 
 // Display detail page for a specific Genre.
 exports.genre_detail = asyncHandler(async (req, res, next) => {
-
-
   const genreId = req.params.id;
   const genre = await Genre.findById({ _id: genreId });
   // console.log('genre name', genreName.name)
@@ -29,10 +24,10 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
 
   res.render("genre_detail", {
     title: `Genre: ${genre.name}`,
+    genre,
     book_list: book_list,
   });
   console.log(book_list);
-
 });
 
 // Display Genre create form on GET.
@@ -66,7 +61,6 @@ exports.genre_create_post = [
       // Data is valid.
       // First connect with database
 
-
       // Check whether genre with same name is already created
       const genreExists = await Genre.findOne({ name: req.body.name })
         .collation({
@@ -85,18 +79,22 @@ exports.genre_create_post = [
       }
     }
     // At the end close the database connection
-
   }),
 ];
 
 // Display Genre delete form on GET.
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre delete GET");
+  const [genre, bookList] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Book.find({ genre: req.params.id }, "title summary").exec(),
+  ]);
+  res.render("genre_delete", { genre, bookList });
 });
 
 // Handle Genre delete on POST.
 exports.genre_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre delete POST");
+  await Genre.findByIdAndDelete(req.params.id).exec();
+  res.redirect("/catalog/genres");
 });
 
 // Display Genre update form on GET.
