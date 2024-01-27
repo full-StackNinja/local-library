@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+  h1 #{genre.name}
+  if bookList.length
+    p Delete following book(s) before deleting genre #{genre.layout}
+    div(style='margin: 50px 50px;')
+      dl 
+        h2(style='margin-bottom:50px;') Books
+        for book in bookList
+          dt 
+            a(href=book.url) #{book.title}
+          dd #{book.summary}
+  else
+    p #[em Do you want to delete genre #{genre.name}?]
+    form(method='POST')
+      button.btn.btn-primary(type='submit') submit
