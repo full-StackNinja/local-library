@@ -56,8 +56,6 @@ exports.book_detail = asyncHandler(async (req, res, next) => {
     BookInstance.find({ book: req.params.id }),
   ]);
 
-  // console.log(book);
-  // console.log('bookInstances', bookInstances)
   res.render("book_detail", { book, bookInstances });
 });
 
@@ -141,10 +139,61 @@ exports.book_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display book update form on GET.
 exports.book_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book update GET");
+  const [book, authorList, genreList] = await Promise.all([
+    Book.findById(req.params.id).populate("author").exec(),
+    Author.find({}).sort({ name: 1 }).exec(),
+    Genre.find({}).sort({ name: 1 }).exec(),
+  ]);
+  res.render("book-update", { book, authorList, genreList });
 });
 
 // Handle book update on POST.
-exports.book_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book update POST");
-});
+exports.book_update_post = [
+  (req, res, next) => {
+    if (!Array.isArray(req.body.genre)) {
+      req.body.genre =
+        typeof req.body.genre === "undefined" ? [] : [req.body.genre];
+    }
+    next();
+  },
+  body("title", "Book title is required").trim().isLength({ min: 3 }).escape(),
+  body("summary", "Summary is required").trim().isLength({ min: 3 }).escape(),
+  body("isbn", "ISBN is required").trim().isLength({ min: 1 }).escape(),
+  body("genre.*").escape(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const [allGenres, allAuthors] = await Promise.all([
+      Genre.find({}).sort({ name: 1 }).exec(),
+      Author.find({}).sort({ family_name: 1 }).exec(),
+    ]);
+
+    const book = new Book({
+      title: req.body.title,
+      author: req.body.author,
+      summary: req.body.summary,
+      isbn: req.body.isbn,
+      genre: req.body.genre,
+      _id: req.params.id,
+    });
+    for (const genre in allGenres) {
+      if (book.genre.includes(genre._id)) {
+        genre.checked = true;
+      }
+    }
+
+    if (!errors.isEmpty()) {
+      res.render("book_update", {
+        title: "Update Book",
+        book,
+        genres: allGenres,
+        authors: allAuthors,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      const updatedBook = await Book.findByIdAndUpdate(req.params.id, book);
+      res.redirect(updatedBook.url);
+    }
+  }),
+];
