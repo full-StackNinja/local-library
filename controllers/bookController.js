@@ -5,12 +5,12 @@ const BookInstance = require("../models/bookinstance");
 
 const { body, validationResult } = require("express-validator");
 
-const library_db = require("../library_db");
+
 
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
   const [
     numBooks,
     numAuthors,
@@ -24,7 +24,7 @@ exports.index = asyncHandler(async (req, res, next) => {
     BookInstance.countDocuments({ status: "Available" }).exec(),
     Genre.countDocuments({}).exec(),
   ]);
-  await library_db.close();
+
   const props = {
     title: "Local Library Home",
     book_count: numBooks,
@@ -41,18 +41,18 @@ exports.index = asyncHandler(async (req, res, next) => {
 // Display list of all books.
 exports.book_list = asyncHandler(async (req, res, next) => {
   // Connect with mongodb database
-  await library_db.connect();
+
   const allBooks = await Book.find({}, "title author")
     .sort({ title: 1 })
     .populate("author")
     .exec();
   res.render("book_list", { title: "Book List", book_list: allBooks });
-  await library_db.close();
+
 });
 
 // Display detail page for a specific book.
 exports.book_detail = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
   const [book, bookInstances] = await Promise.all([
     Book.findById(req.params.id).populate([
       { path: "author" },
@@ -65,12 +65,12 @@ exports.book_detail = asyncHandler(async (req, res, next) => {
   // console.log('bookInstances', bookInstances)
   res.render("book_detail", { book, bookInstances });
 
-  await library_db.close();
+
 });
 
 // Display book create form on GET.
 exports.book_create_get = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
   const allAuthors = await Author.find({}).sort({ family_name: 1 }).exec();
   const allGenres = await Genre.find({}).sort({ name: 1 }).exec();
   res.render("book_form", {
@@ -78,7 +78,7 @@ exports.book_create_get = asyncHandler(async (req, res, next) => {
     authors: allAuthors,
     genres: allGenres,
   });
-  await library_db.close();
+
 });
 
 // Handle book create on POST.
@@ -96,7 +96,7 @@ exports.book_create_post = [
   body("genre.*").escape(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-    await library_db.connect();
+
 
     const [allGenres, allAuthors] = await Promise.all([
       Genre.find({}).sort({ name: 1 }).exec(),
@@ -130,7 +130,7 @@ exports.book_create_post = [
       await book.save();
       res.redirect(book.url);
     }
-    await library_db.close();
+
   }),
 ];
 

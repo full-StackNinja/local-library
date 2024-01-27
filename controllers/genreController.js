@@ -2,20 +2,20 @@ const Genre = require("../models/genre");
 const Book = require("../models/book");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
-const library_db = require("../library_db");
+
 
 // Display list of all Genre.
 exports.genre_list = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
   const allGenres = await Genre.find({}).exec();
 
   res.render("genre_list", { title: "Genre List", genre_list: allGenres });
-  await library_db.close();
+
 });
 
 // Display detail page for a specific Genre.
 exports.genre_detail = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
 
   const genreId = req.params.id;
   const genre = await Genre.findById({ _id: genreId });
@@ -32,7 +32,7 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
     book_list: book_list,
   });
   console.log(book_list);
-  await library_db.close();
+
 });
 
 // Display Genre create form on GET.
@@ -65,7 +65,7 @@ exports.genre_create_post = [
     } else {
       // Data is valid.
       // First connect with database
-      await library_db.connect();
+
 
       // Check whether genre with same name is already created
       const genreExists = await Genre.findOne({ name: req.body.name })
@@ -85,7 +85,7 @@ exports.genre_create_post = [
       }
     }
     // At the end close the database connection
-    await library_db.close();
+
   }),
 ];
 

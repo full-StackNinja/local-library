@@ -2,14 +2,14 @@ const BookInstance = require("../models/bookinstance");
 const Book = require("../models/book");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
-const library_db = require("../library_db");
+
 
 // Display list of all BookInstances.
 exports.bookinstance_list = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
   const allBookInstances = await BookInstance.find().populate("book").exec();
 
-  await library_db.close();
+
 
   res.render("bookinstance_list", {
     title: "Book Instance List",
@@ -19,7 +19,7 @@ exports.bookinstance_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific BookInstance.
 exports.bookinstance_detail = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
   const bookInstance = await BookInstance.findById(req.params.id)
     .populate("book")
     .exec();
@@ -29,13 +29,13 @@ exports.bookinstance_detail = asyncHandler(async (req, res, next) => {
 
 // Display BookInstance create form on GET.
 exports.bookinstance_create_get = asyncHandler(async (req, res, next) => {
-  await library_db.connect();
+
   const allBooks = await Book.find({}, "title").sort({ title: 1 }).exec();
   res.render("bookinstance_form", {
     title: "Create Bookinstance",
     books: allBooks,
   });
-  await library_db.close();
+
 });
 
 // Handle BookInstance create on POST.
@@ -48,7 +48,7 @@ exports.bookinstance_create_post = [
     .isISO8601()
     .toDate(),
   asyncHandler(async (req, res, next) => {
-    await library_db.connect();
+
 
     const books = await Book.find({}, "title").sort({ title: 1 }).exec();
 
@@ -73,7 +73,7 @@ exports.bookinstance_create_post = [
       res.redirect(bookInstance.url);
     }
 
-    await library_db.close();
+
   }),
 ];
 
