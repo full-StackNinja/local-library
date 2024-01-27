@@ -14,4 +14,8 @@ block content
       span.loaned #{bookInstance.status}
   if bookInstance.status !=='Available'
     p #[strong Due back:] #{bookInstance.due_back_formatted}
+  
+  hr 
+  p
+    a(href=bookInstance.url+'/delete') Delete this copy
 
