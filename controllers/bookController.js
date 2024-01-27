@@ -5,12 +5,9 @@ const BookInstance = require("../models/bookinstance");
 
 const { body, validationResult } = require("express-validator");
 
-
-
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-
   const [
     numBooks,
     numAuthors,
@@ -47,12 +44,10 @@ exports.book_list = asyncHandler(async (req, res, next) => {
     .populate("author")
     .exec();
   res.render("book_list", { title: "Book List", book_list: allBooks });
-
 });
 
 // Display detail page for a specific book.
 exports.book_detail = asyncHandler(async (req, res, next) => {
-
   const [book, bookInstances] = await Promise.all([
     Book.findById(req.params.id).populate([
       { path: "author" },
@@ -64,13 +59,10 @@ exports.book_detail = asyncHandler(async (req, res, next) => {
   // console.log(book);
   // console.log('bookInstances', bookInstances)
   res.render("book_detail", { book, bookInstances });
-
-
 });
 
 // Display book create form on GET.
 exports.book_create_get = asyncHandler(async (req, res, next) => {
-
   const allAuthors = await Author.find({}).sort({ family_name: 1 }).exec();
   const allGenres = await Genre.find({}).sort({ name: 1 }).exec();
   res.render("book_form", {
@@ -78,7 +70,6 @@ exports.book_create_get = asyncHandler(async (req, res, next) => {
     authors: allAuthors,
     genres: allGenres,
   });
-
 });
 
 // Handle book create on POST.
@@ -96,7 +87,6 @@ exports.book_create_post = [
   body("genre.*").escape(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-
 
     const [allGenres, allAuthors] = await Promise.all([
       Genre.find({}).sort({ name: 1 }).exec(),
@@ -130,18 +120,23 @@ exports.book_create_post = [
       await book.save();
       res.redirect(book.url);
     }
-
   }),
 ];
 
 // Display book delete form on GET.
 exports.book_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete GET");
+  //Fist get the requested book and it's all the instances
+  const [book, bookInstances] = await Promise.all([
+    Book.findById(req.params.id).populate("author").exec(),
+    BookInstance.find({ book: req.params.id }).exec(),
+  ]);
+  res.render("book_delete", { book, bookInstances });
 });
 
 // Handle book delete on POST.
 exports.book_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete POST");
+  await Book.findByIdAndDelete(req.params.id);
+  res.redirect("/catalog/books");
 });
 
 // Display book update form on GET.
