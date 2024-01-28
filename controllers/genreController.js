@@ -99,10 +99,54 @@ exports.genre_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display Genre update form on GET.
 exports.genre_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre update GET");
+  const genre = await Genre.findById(req.params.id).exec();
+  res.render("genre_form", { title: "Genre Update", genre });
 });
 
 // Handle Genre update on POST.
-exports.genre_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre update POST");
-});
+exports.genre_update_post = [
+  body("name")
+    .trim()
+    .isLength({ min: 3 })
+    .withMessage("Genre name must be at least 3 characters long")
+    .escape(),
+  // Process request after validation and sanitization
+  asyncHandler(async (req, res, next) => {
+    // Extract errors from req object
+    const errors = validationResult(req);
+
+    // Create genre object for the current request
+    const genre = new Genre({ name: req.body.name, _id: req.params.id });
+
+    if (!errors.isEmpty()) {
+      res.render("genre_form", {
+        title: "Create Genre",
+        genre: genre,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data is valid.
+      // First connect with database
+
+      // Check whether genre with same name is already created
+      const genreExists = await Genre.findOne({ name: req.body.name })
+        .collation({
+          locale: "en",
+          strength: 2,
+        })
+        .exec();
+      // console.log('genre status', genreExists)
+      if (genreExists) {
+        // Then redirect to its detail page
+        res.redirect(genreExists.url);
+      } else {
+        const genreUpdated = await Genre.findByIdAndUpdate(
+          req.params.id,
+          genre
+        );
+        res.redirect(genreUpdated.url);
+      }
+    }
+  }),
+];
