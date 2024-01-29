@@ -9,7 +9,7 @@ block content
         option(value='') --Select Book Name--
         each book in books
           if bookInstance
-            if book._id === bookInstance.book._id
+            if book._id.toString() === bookInstance.book._id.toString()
               option(value=book._id selected) #{book.title}
             else
               option(value=book._id) #{book.title}
@@ -31,7 +31,7 @@ block content
             else
               option(value=status) #{status}
       label(for='due_back') #[strong Date when available:]
-      input#due_back.form-control(type='date' name='due_back' placeholder='mm-dd-yyyy' value=(undefined===bookInstance?"": bookInstance.due_back))
+      input#due_back.form-control(type='date' name='due_back' placeholder='mm-dd-yyyy' value=(undefined===bookInstance || null === bookInstance.due_back?"": bookInstance.due_back.toISOString().slice(0,10)))
     button.btn.btn-primary(type='submit') Submit
 
   if errors
