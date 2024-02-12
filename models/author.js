@@ -1,4 +1,4 @@
-const mongoose = require("../library_db");
+const mongoose = require("mongoose");
 const { DateTime } = require("luxon");
 const { Schema } = mongoose;
 
