@@ -4,6 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
+const library_db = require("./library_db");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const catalogRouter = require("./routes/catalog");
@@ -11,6 +12,12 @@ const catalogRouter = require("./routes/catalog");
 const compression = require("compression");
 const helmet = require("helmet");
 const RateLimit = require("express-rate-limit");
+
+// Connect to the database on every request...
+
+library_db().catch((err) => {
+  next(err);
+});
 
 const app = express();
 
