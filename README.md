@@ -5,4 +5,4 @@
 - pugJS is used as the view template engine to dynamically update the content.
 - For styling purposes, bootstrap is used.
 
-[LIVE PREVIEW](https://root-responsible-shelf.glitch.me/catalog)
+[LIVE PREVIEW](https://full-stack-local-library.adaptable.app/catalog)
